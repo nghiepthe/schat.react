@@ -1,68 +1,93 @@
-import { RootStackScreenProps } from "@components/app.nav/types";
-import React from "react";
-import { Image, View } from "react-native";
-import { Button, Text } from "react-native-paper";
-import QRCode from "react-native-qrcode-svg";
-import { ToastAndroid } from "react-native";
-import RNFS from "react-native-fs";
-import CameraRoll from "@react-native-community/cameraroll";
-import { PermissionsAndroid, Platform } from "react-native";
+import {RootStackScreenProps} from '@components/app.nav/types';
+import Clipboard from '@react-native-community/clipboard';
+import {useFocusEffect} from '@react-navigation/native';
+import {WINDOW_WIDTH} from '@styles/mixins';
+import {saveQRCode} from '@utils';
+import React from 'react';
+import {StyleSheet, View} from 'react-native';
+import {IconButton, Text} from 'react-native-paper';
+import QRCode from 'react-native-qrcode-svg';
 
-async function hasAndroidPermission() {
-  const permission = PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE;
-
-  const hasPermission = await PermissionsAndroid.check(permission);
-  if (hasPermission) {
-    return true;
-  }
-
-  const status = await PermissionsAndroid.request(permission, {
-    title: "Cool Photo App Camera Permission",
-    message:
-      "Cool Photo App needs access to your camera " +
-      "so you can take awesome pictures.",
-    buttonNeutral: "Ask Me Later",
-    buttonNegative: "Cancel",
-    buttonPositive: "OK",
-  });
-  return status === "granted";
-}
-
-type Props = RootStackScreenProps<"AuthSignupSuccess">;
-export const AuthSignupSuccess = ({ navigation, route }: Props) => {
-  const { fullName, address, mnemonic, privateKey } = route.params;
-
-  const onSaveBtnClick = () => {
-    svg.toDataURL(onSaveQRCode);
+type Props = RootStackScreenProps<'AuthSignupSuccess'>;
+export const AuthSignupSuccess = ({navigation, route}: Props) => {
+  const {fullName, address, mnemonic, privateKey} = route.params;
+  const onSaveQRCode = () => {
+    qrcode.toDataURL(data => saveQRCode(data, address + '.png'));
   };
 
-  const onSaveQRCode = async (data) => {
-    if (Platform.OS === "android" && !(await hasAndroidPermission())) {
-      return;
-    }
+  let qrcode;
 
-    RNFS.writeFile(RNFS.CachesDirectoryPath + "/qrcode.png", data, "base64")
-      .then((success) => {
-        return CameraRoll.save(RNFS.CachesDirectoryPath + "/qrcode.png", {
-          type: "photo",
-        });
-      })
-      .then(() => {
-        ToastAndroid.show("Saved to gallery !!", ToastAndroid.SHORT);
-      });
-  };
-
-  let svg;
+  useFocusEffect(() => navigation.setOptions({title: 'Thông tin tài khoản'}));
   return (
-    <View>
-      <Text>{"Dang ky thanh cong"}</Text>
-      <Text>{fullName}</Text>
-      <Text>{address}</Text>
-      <Text>{mnemonic}</Text>
-      <QRCode value={privateKey} getRef={(c) => (svg = c)} />
-      <Button onPress={onSaveBtnClick}>
-        <Text>Save QR Code</Text>
-      </Button>
+    <View style={styleIndex.container}>
+      <View style={styleIndex.row}>
+        <Text style={styleIndex.textName}>Tên tài khoản: </Text>
+        <Text style={styleIndex.textContent}>{fullName}</Text>
+      </View>
+      <View style={styleIndex.row}>
+        <Text style={styleIndex.textName}>address: </Text>
+        <Text style={styleIndex.textContent}>{address}</Text>
+        <IconButton
+          icon={'content-copy'}
+          onPress={() => Clipboard.setString(address)}
+        />
+      </View>
+      <View style={styleIndex.row}>
+        <Text style={styleIndex.textName}>mnemonic: </Text>
+        <Text style={styleIndex.textContent}>{mnemonic}</Text>
+        <IconButton
+          icon={'content-copy'}
+          onPress={() => Clipboard.setString(mnemonic)}
+        />
+      </View>
+      <View style={styleIndex.QRcode}>
+        <Text style={styleIndex.textName}>Mã QR code</Text>
+        <QRCode value={privateKey} size={300} getRef={c => (qrcode = c)} />
+        <IconButton icon={'download'} size={50} onPress={onSaveQRCode} />
+      </View>
     </View>
   );
 };
+
+const styleIndex = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 16,
+  },
+  item: {
+    backgroundColor: '#f9c2ff',
+    padding: 20,
+    marginVertical: 8,
+    marginHorizontal: 16,
+  },
+  title: {
+    fontSize: 20,
+    color: '#27AAE1',
+  },
+  row: {
+    width: WINDOW_WIDTH - 20,
+    flexDirection: 'row',
+    marginBottom: 5,
+    //backgroundColor:"#27AAE1",
+  },
+  textName: {
+    width: (WINDOW_WIDTH - 20) * 0.25,
+    fontWeight: 'bold',
+  },
+  textContent: {
+    width: (WINDOW_WIDTH - 20) * 0.65,
+    shadowColor: '#000',
+    // borderRadius:5,
+    // borderWidth:1,
+    // borderColor:"#000000",
+    // paddingLeft:5,
+    //backgroundColor:"#27AAE1"
+  },
+  textIcon: {
+    width: (WINDOW_WIDTH - 20) * 0.1,
+  },
+  QRcode: {
+    padding: 10,
+    alignItems: 'center',
+  },
+});
