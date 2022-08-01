@@ -1,18 +1,16 @@
-import {MnemonicService} from '@services';
+import { RootStackScreenProps } from "@components/app.nav/types";
+import { AuthApi } from "./../apis/auth";
+import { MnemonicService } from "@services";
 
 export const AuthService = {
-  signup(success, error, values) {
-    try {
-      console.log('Generating key....');
-      const {address, privateKey, mnemonic} = MnemonicService.generate();
-      success({fullName: values.fullName, address, mnemonic, privateKey});
-      console.log('Finishing!');
-    } catch (e) {
-      error(e);
-    }
+  async signup(success, error, values) {
+    const { fullName } = values;
+    const { address, privateKey, mnemonic } = MnemonicService.generate();
+    const { data } = await AuthApi.signup({ fullName, address });
+    if (data?.success)
+      return success({ fullName, address, mnemonic, privateKey });
+    return error(data?.error);
   },
-
-  signin() {},
-
-  restore() {},
+  async signin() {},
+  async restore() {},
 };
