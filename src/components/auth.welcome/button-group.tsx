@@ -12,7 +12,9 @@ export const ButtonGroup = () => {
     <View style={style.containerbutton}>
       {/* Đăng nhập */}
       <Text style={style.textthird}>{AuthWelcome.INSTRUCTION}</Text>
-      <TouchableOpacity style={style.buttonlogin} onPress={() => {}}>
+      <TouchableOpacity
+        style={style.buttonlogin}
+        onPress={() => navigation.navigate('AuthSignin')}>
         <Text
           style={{
             fontFamily: 'Roboto',

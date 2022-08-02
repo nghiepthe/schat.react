@@ -3,14 +3,15 @@ import {
   AuthWelcome,
   AuthSignup,
   AuthSignupSuccess,
-} from "@components";
-import { NavigationContainer } from "@react-navigation/native";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import React from "react";
-import { AppNavOptions, AuthWelScrnOpts } from "./options";
-import { RootStackParamList } from "@components/app.nav/types";
-import { useAppSelector } from "@store/hooks";
-import { RootState } from "@store";
+  AuthSignin,
+} from '@components';
+import {NavigationContainer} from '@react-navigation/native';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import React from 'react';
+import {AppNavOptions, AuthWelScrnOpts} from './options';
+import {RootStackParamList} from '@components/app.nav/types';
+import {useAppSelector} from '@store/hooks';
+import {RootState} from '@store';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -34,6 +35,7 @@ export const AppNav = () => {
               name="AuthSignupSuccess"
               component={AuthSignupSuccess}
             />
+            <Stack.Screen name="AuthSignin" component={AuthSignin} />
           </Stack.Group>
         ) : null}
       </Stack.Navigator>
