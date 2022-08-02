@@ -1,6 +1,9 @@
 import axios from 'axios';
+import {HOST} from '@env';
+
+console.log('SERVER at: ', HOST);
 
 export const instance = axios.create({
-  baseURL: 'http://192.168.43.71:3000/',
+  baseURL: HOST,
   timeout: 10000,
 });
