@@ -1,5 +1,7 @@
 import {AuthApi} from './../apis/auth';
 import {MnemonicService} from '@services';
+import {io} from 'socket.io-client';
+import {socket} from '@apis';
 
 export const AuthService = {
   async signup(success, error, values) {
@@ -11,12 +13,15 @@ export const AuthService = {
     return error(data?.error);
   },
 
-  async signin(success, error, privateKey) {
+  async signin(privateKey) {
     const signature = await MnemonicService.getSignature(privateKey);
-    const {data} = await AuthApi.signin(signature);
-    console.log(data);
-    if (data?.success) return success();
-    return error(data?.error);
+    socket.auth = cb => cb({token: signature});
+    socket.disconnect().connect();
+    // socket.on();
+    //const {data} = await AuthApi.signin(signature);
+    //console.log(data);
+    //if (data?.success) return success();
+    //return error(data?.error);
   },
   async restore() {},
 };

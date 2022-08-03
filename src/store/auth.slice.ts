@@ -1,15 +1,16 @@
 import {createSlice} from '@reduxjs/toolkit';
+import {io, Socket} from 'socket.io-client';
 
 interface AuthState {
   isLoading: boolean;
   isSignout: boolean;
-  wallet: unknown;
+  connected: boolean;
 }
 
 const initialState: AuthState = {
   isLoading: true,
   isSignout: false,
-  wallet: null,
+  connected: false,
 };
 
 const authSlice = createSlice({

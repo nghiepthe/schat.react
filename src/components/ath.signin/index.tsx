@@ -1,13 +1,18 @@
+import {SocketContext} from '@apis';
+import {useFocusEffect} from '@react-navigation/native';
 import {AuthService} from '@services';
-import React from 'react';
+import React, {useContext, useEffect} from 'react';
 import {Alert, StyleSheet, Text} from 'react-native';
 import {BarCodeReadEvent, RNCamera} from 'react-native-camera';
 import QRCodeScanner from 'react-native-qrcode-scanner';
 
 export const AuthSignin = () => {
+  const socket = useContext(SocketContext);
+
   const onRead = (e: BarCodeReadEvent) => {
-    AuthService.signin(onSuccess, onError, e.data);
+    AuthService.signin(e.data);
   };
+
   const onSuccess = () => {
     Alert.alert(
       'Thông báo',
@@ -17,6 +22,20 @@ export const AuthSignin = () => {
   const onError = () => {
     Alert.alert('Lỗi rồi', 'Người dùng chưa xác thực!');
   };
+
+  useFocusEffect(() => {
+    socket.on('connection', onSuccess);
+    return () => {
+      socket.off('connection', onSuccess);
+    };
+  });
+
+  useFocusEffect(() => {
+    socket.on('unauthorize', onError);
+    return () => {
+      socket.off('unauthorize', onError);
+    };
+  });
 
   return (
     <QRCodeScanner

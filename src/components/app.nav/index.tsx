@@ -23,7 +23,7 @@ export const AppNav = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={AppNavOptions}>
-        {auth.wallet == null ? (
+        {!auth.connected ? (
           <Stack.Group>
             <Stack.Screen
               name="AuthWelcome"
