@@ -10,6 +10,13 @@ export const AuthService = {
       return success({fullName, address, mnemonic, privateKey});
     return error(data?.error);
   },
-  async signin() {},
+
+  async signin(success, error, privateKey) {
+    const signature = await MnemonicService.getSignature(privateKey);
+    const {data} = await AuthApi.signin(signature);
+    console.log(data);
+    if (data?.success) return success();
+    return error(data?.error);
+  },
   async restore() {},
 };

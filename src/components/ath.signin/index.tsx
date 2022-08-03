@@ -1,44 +1,35 @@
-import React, {Component} from 'react';
-
-import {
-  AppRegistry,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  Linking,
-} from 'react-native';
-
+import {AuthService} from '@services';
+import React from 'react';
+import {Alert, StyleSheet, Text} from 'react-native';
+import {BarCodeReadEvent, RNCamera} from 'react-native-camera';
 import QRCodeScanner from 'react-native-qrcode-scanner';
-import {RNCamera} from 'react-native-camera';
 
-export class AuthSignin extends Component {
-  onSuccess = e => {
-    Linking.openURL(e.data).catch(err =>
-      console.error('An error occured', err),
+export const AuthSignin = () => {
+  const onRead = (e: BarCodeReadEvent) => {
+    AuthService.signin(onSuccess, onError, e.data);
+  };
+  const onSuccess = () => {
+    Alert.alert(
+      'Thông báo',
+      'Xác thực thành công! Bạn sẽ vào app ngay lập tức',
     );
   };
+  const onError = () => {
+    Alert.alert('Lỗi rồi', 'Người dùng chưa xác thực!');
+  };
 
-  render() {
-    return (
-      <QRCodeScanner
-        onRead={this.onSuccess}
-        flashMode={RNCamera.Constants.FlashMode.torch}
-        topContent={
-          <Text style={styles.centerText}>
-            Go to{' '}
-            <Text style={styles.textBold}>wikipedia.org/wiki/QR_code</Text> on
-            your computer and scan the QR code.
-          </Text>
-        }
-        bottomContent={
-          <TouchableOpacity style={styles.buttonTouchable}>
-            <Text style={styles.buttonText}>OK. Got it!</Text>
-          </TouchableOpacity>
-        }
-      />
-    );
-  }
-}
+  return (
+    <QRCodeScanner
+      onRead={onRead}
+      // flashMode={RNCamera.Constants.FlashMode.torch}
+      topContent={
+        <Text style={styles.centerText}>
+          Scan identity for <Text style={styles.textBold}>SChat</Text>
+        </Text>
+      }
+    />
+  );
+};
 
 const styles = StyleSheet.create({
   centerText: {
