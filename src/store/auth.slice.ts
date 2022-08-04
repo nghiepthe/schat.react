@@ -14,10 +14,6 @@ const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    onLoadingComplete(state, action) {
-      state.isLoading = false;
-      state.isSignout = action.payload.isSignout;
-    },
     onSignin(state) {
       state.isLoading = false;
       state.isSignout = false;
@@ -29,5 +25,5 @@ const authSlice = createSlice({
   },
 });
 
-export const {onLoadingComplete, onSignin, onSignout} = authSlice.actions;
+export const {onSignin, onSignout} = authSlice.actions;
 export const authReducer = authSlice.reducer;

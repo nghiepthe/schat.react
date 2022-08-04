@@ -1,2 +1,2 @@
 export {AuthApi} from './auth';
-export * from './socket-context';
+export * from './socket';

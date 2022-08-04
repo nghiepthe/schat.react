@@ -1,6 +1,7 @@
 import {AuthApi} from './../apis/auth';
 import {MnemonicService, StorageService} from '@services';
 import {socket} from '@apis';
+import {ethers} from 'ethers';
 
 export const AuthService = {
   async signup(success, error, values) {
@@ -12,33 +13,36 @@ export const AuthService = {
     return error(data?.error);
   },
 
-  async signin(privateKey: string, onSuccess, onFail) {
-    if (!privateKey.startsWith('0x')) return;
-    this.attempToConnect(privateKey, onSuccess, onFail);
-    socket.on('connection', () => {
+  async signin(privateKey: string) {
+    if (privateKey && MnemonicService.isPKValid(privateKey)) {
       StorageService.store('privateKey', privateKey);
-      console.log('Saved private key!');
-    });
-  },
-
-  async restore(enterApp, authen) {
-    let privateKey = await StorageService.retrieve('privateKey');
-    if (privateKey == null) return enterApp();
-
-    privateKey = JSON.parse(privateKey);
-    if (privateKey != null) {
-      console.log('Restoring private key: ', privateKey);
-      this.attempToConnect(privateKey, enterApp, authen);
-    } else {
-      return enterApp();
+      this.attempToConnect(privateKey);
     }
   },
 
-  async attempToConnect(privateKey: string, onSuccess, onError) {
+  async signinWithMnemonic(mnemonic: string) {
+    if (!MnemonicService.isValidMnemonic(mnemonic)) return;
+    const wallet = MnemonicService.getWalletFromMnemonic(mnemonic);
+    this.signin(wallet.privateKey);
+  },
+
+  async signout() {
+    await StorageService.del('privateKey');
+    socket.disconnect();
+  },
+
+  async restore(onPKNotFound) {
+    let privateKey = await StorageService.retrieve('privateKey');
+    if (privateKey && MnemonicService.isPKValid(privateKey)) {
+      this.attempToConnect(privateKey);
+    } else {
+      onPKNotFound();
+    }
+  },
+
+  async attempToConnect(privateKey: string) {
     const signature = await MnemonicService.getSignature(privateKey);
     socket.auth = cb => cb({token: signature});
     socket.disconnect().connect();
-    socket.on('connection', onSuccess);
-    socket.on('unauthorize', onError);
   },
 };

@@ -1,22 +1,33 @@
-import React, {useEffect} from 'react';
+import {socket} from '@apis';
+import {ARCIFORM} from '@assets/fonts';
+import {AuthService} from '@services';
+import {onSignin, onSignout} from '@store/auth.slice';
+import {useAppDispatch} from '@store/hooks';
+import {BLACK, SHAPE, WHITE} from '@styles/colors';
+import React, {useContext, useEffect} from 'react';
+import {StyleSheet} from 'react-native';
 import {Flex} from 'react-native-flex-layout';
 import {ActivityIndicator, Text} from 'react-native-paper';
 import {Status} from './status';
-import {useDispatch} from 'react-redux';
-import {StyleSheet} from 'react-native';
-import {onLoadingComplete, onSignin, onSignout} from '@store/auth.slice';
-import {SHAPE, BLACK, WHITE} from '@styles/colors';
-import {ARCIFORM} from '@assets/fonts';
-import {useAppDispatch} from '@store/hooks';
-import {AuthService} from '@services';
 
 export const AppLoading = () => {
+  //const socket = useContext(SocketContext);
   const dispatch = useAppDispatch();
-  const onEnterApp = () => dispatch(onSignin());
-  const onAuthen = () => dispatch(onSignout());
+
+  const onPKNotFound = () => dispatch(onSignout());
+  const onUnauthorize = () => {
+    dispatch(onSignout());
+  };
 
   useEffect(() => {
-    AuthService.restore(onEnterApp, onAuthen);
+    socket.on('unauthorize', onUnauthorize);
+    return () => {
+      socket.off('unauthorize', onUnauthorize);
+    };
+  }, []);
+
+  useEffect(() => {
+    AuthService.restore(onPKNotFound);
   }, []);
 
   return (
