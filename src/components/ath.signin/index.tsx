@@ -1,6 +1,8 @@
 import {SocketContext} from '@apis';
 import {useFocusEffect} from '@react-navigation/native';
 import {AuthService} from '@services';
+import {onSignin} from '@store/auth.slice';
+import {useAppDispatch} from '@store/hooks';
 import React, {useContext, useEffect} from 'react';
 import {Alert, StyleSheet, Text} from 'react-native';
 import {BarCodeReadEvent, RNCamera} from 'react-native-camera';
@@ -8,9 +10,9 @@ import QRCodeScanner from 'react-native-qrcode-scanner';
 
 export const AuthSignin = () => {
   const socket = useContext(SocketContext);
-
+  const dispatch = useAppDispatch();
   const onRead = (e: BarCodeReadEvent) => {
-    AuthService.signin(e.data);
+    AuthService.signin(e.data, onSuccess, onError);
   };
 
   const onSuccess = () => {
@@ -18,6 +20,7 @@ export const AuthSignin = () => {
       'Thông báo',
       'Xác thực thành công! Bạn sẽ vào app ngay lập tức',
     );
+    dispatch(onSignin());
   };
   const onError = () => {
     Alert.alert('Lỗi rồi', 'Người dùng chưa xác thực!');

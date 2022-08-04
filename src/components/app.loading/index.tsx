@@ -4,15 +4,19 @@ import {ActivityIndicator, Text} from 'react-native-paper';
 import {Status} from './status';
 import {useDispatch} from 'react-redux';
 import {StyleSheet} from 'react-native';
-import {restore} from '@store/auth.slice';
+import {onLoadingComplete, onSignin, onSignout} from '@store/auth.slice';
 import {SHAPE, BLACK, WHITE} from '@styles/colors';
 import {ARCIFORM} from '@assets/fonts';
 import {useAppDispatch} from '@store/hooks';
+import {AuthService} from '@services';
 
 export const AppLoading = () => {
   const dispatch = useAppDispatch();
+  const onEnterApp = () => dispatch(onSignin());
+  const onAuthen = () => dispatch(onSignout());
+
   useEffect(() => {
-    setTimeout(() => dispatch(restore()), 500);
+    AuthService.restore(onEnterApp, onAuthen);
   }, []);
 
   return (
