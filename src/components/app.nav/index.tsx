@@ -56,6 +56,10 @@ export const AppNav = () => {
             />
             <Stack.Screen name="AuthSignup" component={AuthSignup} />
             <Stack.Screen name="AuthSignin" component={AuthSignin} />
+            <Stack.Screen
+              name="AuthSignupSuccess"
+              component={AuthSignupSuccess}
+            />
           </Stack.Group>
         ) : (
           <Stack.Group>
@@ -63,10 +67,6 @@ export const AppNav = () => {
               name="MainTab"
               component={MainTab}
               options={MainTabOpts}
-            />
-            <Stack.Screen
-              name="AuthSignupSuccess"
-              component={AuthSignupSuccess}
             />
             <Stack.Screen name="DetailedTask" component={DetailedTask} />
           </Stack.Group>

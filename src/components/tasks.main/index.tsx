@@ -1,4 +1,4 @@
-import {RootStackScreenProps} from '@components/app.nav/types';
+import {MainTabScreenProps} from '@components/app.nav/types';
 import {Flex} from '@react-native-material/core';
 import React from 'react';
 import {FAB} from 'react-native-paper';
@@ -6,7 +6,7 @@ import {Tabs, TabScreen} from 'react-native-paper-tabs';
 import {TaskTab} from './task-tab';
 
 const stateList = ['Đã giao', 'Đã nhận', 'Hoàn tất', 'Quá hạn'];
-type Props = RootStackScreenProps<'MainTab'>;
+type Props = MainTabScreenProps<'MainTask'>;
 export const MainTasks = ({navigation}: Props) => {
   return (
     <Flex fill>

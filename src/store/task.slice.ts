@@ -17,7 +17,7 @@ const initialState: TasksState = {
   tasks: [],
 };
 
-for (let i = 0; i <= 100; i++) {
+for (let i = 0; i <= 20; i++) {
   initialState.tasks.push({
     id: i,
     title: `Title ${i}`,
@@ -26,7 +26,6 @@ for (let i = 0; i <= 100; i++) {
     state: Math.floor(Math.random() * 4),
   });
 }
-
 const tasksSlice = createSlice({
   name: 'tasks',
   initialState,

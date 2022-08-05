@@ -8,8 +8,9 @@ export const AuthService = {
     const {fullName} = values;
     const {address, privateKey, mnemonic} = MnemonicService.generate();
     const {data} = await AuthApi.signup({fullName, address});
-    if (data?.success)
+    if (data?.success) {
       return success({fullName, address, mnemonic, privateKey});
+    }
     return error(data?.error);
   },
 

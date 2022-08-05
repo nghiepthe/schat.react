@@ -1,7 +1,7 @@
 import {RootState} from '@store';
-import {Task} from '@store/task.slice';
+import {useAppSelector} from '@store/hooks';
 import React from 'react';
-import {FlatList, ListRenderItem} from 'react-native';
+import {FlatList} from 'react-native';
 import {useSelector} from 'react-redux';
 import {TaskItem} from './task-item';
 
@@ -14,7 +14,9 @@ const trailingIcon = [
 ];
 
 export const TaskTab = ({navigation, state}) => {
-  const data = useSelector((state: RootState) => state.tasks.tasks);
+  const data = useAppSelector((rootState: RootState) =>
+    rootState.tasks.tasks.filter(t => t.state === state),
+  );
 
   return (
     <FlatList
