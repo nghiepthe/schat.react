@@ -1,8 +1,8 @@
-import {socket} from '@apis';
 import {RootStackScreenProps} from '@components/app.nav/types';
 import {useFocusEffect} from '@react-navigation/native';
 import {SigninSchema} from '@schemas';
 import {AuthService} from '@services';
+import {socket} from '@utils';
 import {Colors} from '@styles';
 import {Formik} from 'formik';
 import React, {useState} from 'react';
@@ -13,28 +13,42 @@ import QRCodeScanner from 'react-native-qrcode-scanner';
 
 type Props = RootStackScreenProps<'AuthSignin'>;
 export const AuthSignin: React.FC<Props> = ({navigation}) => {
+  useFocusEffect(() => navigation.setOptions({title: 'Đăng nhập'}));
+
   const [loading, setLoading] = useState(false);
   const [visible, setVisible] = React.useState(false);
   const showModal = () => setVisible(true);
   const hideModal = () => setVisible(false);
 
-  const onRead = (e: BarCodeReadEvent) => {
+  const onStart = () => {
     hideModal();
     setLoading(true);
-    setTimeout(async () => {
-      await AuthService.signin(e.data);
-      setLoading(false);
-    }, 0);
   };
 
-  const onBtnAuthClick = values => {
-    AuthService.signinWithMnemonic(values.mnemonic);
+  const onError = error => Alert.alert('Thông báo', error);
+  const onFinish = () => setLoading(false);
+
+  const onRead = (e: BarCodeReadEvent) =>
+    AuthService.Signin({
+      onStart,
+      onFinish,
+      onError,
+      payload: {privateKey: e.data},
+    });
+
+  const onLogin = payload => {
+    AuthService.SigninWithMnemonic({
+      onStart,
+      onFinish,
+      onError,
+      payload,
+    });
   };
+
   const onUnauthorize = () => {
-    Alert.alert('Lỗi rồi', 'Người dùng chưa xác thực!');
+    Alert.alert('Thông báo', 'Tài khoản không tồn tại!');
   };
 
-  useFocusEffect(() => navigation.setOptions({title: 'Đăng nhập'}));
   useFocusEffect(() => {
     socket.on('unauthorize', onUnauthorize);
     return () => {
@@ -46,7 +60,7 @@ export const AuthSignin: React.FC<Props> = ({navigation}) => {
     <Formik
       initialValues={{mnemonic: ''}}
       validationSchema={SigninSchema}
-      onSubmit={onBtnAuthClick}>
+      onSubmit={onLogin}>
       {({handleChange, handleBlur, handleSubmit, values, errors, touched}) => (
         <View style={styles.container}>
           <View style={styles.boxInput}>

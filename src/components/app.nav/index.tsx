@@ -1,4 +1,3 @@
-import {socket} from '@apis';
 import {
   AppLoading,
   AuthSignin,
@@ -11,40 +10,19 @@ import {RootStackParamList} from '@components/app.nav/types';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {RootState} from '@store';
-import {onSignin, onSignout} from '@store/auth.slice';
-import {useAppDispatch, useAppSelector} from '@store/hooks';
-import React, {useEffect} from 'react';
+import {useAppSelector} from '@store/hooks';
+import React from 'react';
 import {MainTab} from './main-tab';
 import {AppNavOptions, AuthWelScrnOpts, MainTabOpts} from './options';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export const AppNav = () => {
-  const dispatch = useAppDispatch();
-
-  const onSocketConnect = () => {
-    dispatch(onSignin());
-  };
-
-  const onSocketDisconnect = () => {
-    dispatch(onSignout());
-  };
-
-  useEffect(() => {
-    socket.on('connection', onSocketConnect);
-    socket.on('disconnect', onSocketDisconnect);
-    return () => {
-      socket.off('connection', onSocketConnect);
-      socket.off('disconnect', onSocketDisconnect);
-    };
-  }, []);
-
   const auth = useAppSelector((state: RootState) => state.auth);
 
   if (auth.isLoading) return <AppLoading />;
 
   return (
-    // <SocketProvider value={socket}>
     <NavigationContainer>
       <Stack.Navigator screenOptions={AppNavOptions}>
         {auth.isSignout ? (
@@ -73,6 +51,5 @@ export const AppNav = () => {
         )}
       </Stack.Navigator>
     </NavigationContainer>
-    //  </SocketProvider>
   );
 };

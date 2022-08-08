@@ -12,22 +12,20 @@ import QRCode from 'react-native-qrcode-svg';
 
 type Props = RootStackScreenProps<'AuthSignupSuccess'>;
 export const AuthSignupSuccess = ({navigation, route}: Props) => {
+  useFocusEffect(() => navigation.setOptions({title: 'Thông tin tài khoản'}));
   const {fullName, address, mnemonic, privateKey} = route.params;
   const [loading, setLoading] = useState(false);
-  const onSaveQRCode = () => {
-    qrcode.toDataURL(data => saveQRCode(data, address + '.png'));
-  };
-  const onBtnLoginClick = () => {
-    setLoading(true);
-    setTimeout(async () => {
-      await AuthService.signin(privateKey);
-      setLoading(false);
-    }, 0);
-  };
-
   let qrcode;
 
-  useFocusEffect(() => navigation.setOptions({title: 'Thông tin tài khoản'}));
+  const onStart = () => setLoading(true);
+  const onError = err => Alert.alert('Error', err);
+  const onFinish = () => setLoading(false);
+  const onLogin = () =>
+    AuthService.Signin({onStart, onError, onFinish, payload: {privateKey}});
+  const onSaveQRCode = () => {
+    qrcode.toDataURL((data: string) => saveQRCode(data, address));
+  };
+
   return (
     <View style={styleIndex.container}>
       <View style={styleIndex.row}>
@@ -65,7 +63,7 @@ export const AuthSignupSuccess = ({navigation, route}: Props) => {
       <Button
         style={styleIndex.loginButton}
         color={WHITE}
-        onPress={onBtnLoginClick}
+        onPress={onLogin}
         loading={loading}>
         Đăng nhập luôn
       </Button>

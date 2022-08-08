@@ -1,49 +1,48 @@
-import {AuthApi} from './../apis/auth';
-import {MnemonicService, StorageService} from '@services';
-import {socket} from '@apis';
-import {ethers} from 'ethers';
+import EncryptedStorage from 'react-native-encrypted-storage';
+import {MnemonicService, Axios, wrapper, socket} from '@utils';
+import {onReconnect} from '@utils/socket';
 
-export const AuthService = {
-  async signup(success, error, values) {
-    const {fullName} = values;
-    const {address, privateKey, mnemonic} = MnemonicService.generate();
-    const {data} = await AuthApi.signup({fullName, address});
-    if (data?.success) {
-      return success({fullName, address, mnemonic, privateKey});
-    }
-    return error(data?.error);
-  },
-
-  async signin(privateKey: string) {
-    if (privateKey && MnemonicService.isPKValid(privateKey)) {
-      StorageService.store('privateKey', privateKey);
-      this.attempToConnect(privateKey);
-    }
-  },
-
-  async signinWithMnemonic(mnemonic: string) {
-    if (!MnemonicService.isValidMnemonic(mnemonic)) return;
-    const wallet = MnemonicService.getWalletFromMnemonic(mnemonic);
-    this.signin(wallet.privateKey);
-  },
-
-  async signout() {
-    await StorageService.del('privateKey');
-    socket.disconnect();
-  },
-
-  async restore(onPKNotFound) {
-    let privateKey = await StorageService.retrieve('privateKey');
-    if (privateKey && MnemonicService.isPKValid(privateKey)) {
-      this.attempToConnect(privateKey);
-    } else {
-      onPKNotFound();
-    }
-  },
-
-  async attempToConnect(privateKey: string) {
-    const signature = await MnemonicService.getSignature(privateKey);
-    socket.auth = cb => cb({token: signature});
-    socket.disconnect().connect();
-  },
+const signup = async ({fullName}) => {
+  console.log('Generating key....');
+  const {address, privateKey, mnemonic} = MnemonicService.generate();
+  console.log('Sign up....');
+  const {data} = await Axios.post('user/add', {fullName, address});
+  console.log('Response from server: ', data);
+  if (data?.error) throw data?.error;
+  return {fullName, address, mnemonic, privateKey};
 };
+
+const signin = async ({privateKey}) => {
+  const signature = await MnemonicService.getSignature(privateKey);
+
+  const onSave = () => {
+    if (socket.auth['token'] === signature)
+      EncryptedStorage.setItem('privateKey', privateKey);
+    socket.off('connection', onSave);
+  };
+
+  socket.on('connection', onSave);
+  onReconnect(signature);
+};
+
+const signinWithMnemonic = async ({mnemonic}) => {
+  const {privateKey} = MnemonicService.getWalletFromMnemonic(mnemonic);
+  signin({privateKey});
+};
+
+const signout = async () => {
+  await EncryptedStorage.removeItem('privateKey');
+  socket.disconnect();
+};
+
+const restore = async () => {
+  let privateKey = await EncryptedStorage.getItem('privateKey');
+  if (!privateKey) throw 'Private not found';
+  signin({privateKey});
+};
+
+export const Signup = wrapper(signup);
+export const Signin = wrapper(signin);
+export const SigninWithMnemonic = wrapper(signinWithMnemonic);
+export const Signout = wrapper(signout);
+export const Restore = wrapper(restore);

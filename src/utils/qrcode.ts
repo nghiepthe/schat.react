@@ -8,7 +8,7 @@ export async function saveQRCode(data, fileName) {
   if (Platform.OS === 'android' && !(await hasAndroidPermission())) {
     return;
   }
-  const filePath = RNFS.CachesDirectoryPath + '/' + fileName;
+  const filePath = RNFS.CachesDirectoryPath + '/' + fileName + '.png';
   RNFS.writeFile(filePath, data, 'base64')
     .then(success => CameraRoll.save(filePath, {type: 'photo'}))
     .then(() => ToastAndroid.show('Da luu vao thiet bi', ToastAndroid.SHORT));

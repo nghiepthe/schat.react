@@ -3,12 +3,18 @@ import '@ethersproject/shims';
 import {ethers} from 'ethers';
 
 export const MnemonicService = {
+  getWalletFromMnemonic(mnemonic) {
+    if (!this.isValidMnemonic(mnemonic)) throw 'Mnemonic is invalid';
+    return ethers.Wallet.fromMnemonic(mnemonic);
+  },
+
   generate() {
     const {address, privateKey, mnemonic} = ethers.Wallet.createRandom();
     return {address, privateKey, mnemonic: mnemonic.phrase};
   },
 
   async getSignature(privateKey) {
+    if (!this.isValidPrivateKey(privateKey)) throw 'Private key is invalid';
     const wallet = new ethers.Wallet(privateKey);
     let messageHash = ethers.utils.id('Hello World');
     let messageHashBytes = ethers.utils.arrayify(messageHash);
@@ -17,15 +23,11 @@ export const MnemonicService = {
     return {messageHash, v, r, s};
   },
 
-  isPKValid(privateKey: string) {
-    return ethers.utils.isHexString(privateKey, 32);
-  },
-
-  getWalletFromMnemonic(mnemonic) {
-    return ethers.Wallet.fromMnemonic(mnemonic);
-  },
-
   isValidMnemonic(mnemonic) {
     return ethers.utils.isValidMnemonic(mnemonic);
+  },
+
+  isValidPrivateKey(privateKey: string) {
+    return ethers.utils.isHexString(privateKey, 32);
   },
 };

@@ -2,42 +2,34 @@ import {Alert, StyleSheet, View} from 'react-native';
 import {Button, Text, TextInput} from 'react-native-paper';
 import {Formik} from 'formik';
 import {SignupSchema} from '@schemas/auth.signup';
-import React, {createRef, useState} from 'react';
+import React, {useState} from 'react';
 import {useFocusEffect} from '@react-navigation/native';
 import {RootStackScreenProps} from '@components/app.nav/types';
 import {AuthService} from '@services';
 
-interface SignupForm {
-  fullName: string;
-}
-
 type Props = RootStackScreenProps<'AuthSignup'>;
-
 export const AuthSignup = ({navigation}: Props) => {
-  const [loading, setLoading] = useState(false);
-  const [label, setLabel] = useState('Tiến hành đăng ký');
   useFocusEffect(() => navigation.setOptions({title: 'Đăng ký'}));
+  const [label, setLabel] = useState('Tiến hành đăng ký');
+  const [loading, setLoading] = useState(false);
 
-  const onSuccess = result => {
-    navigation.navigate('AuthSignupSuccess', result);
-  };
-  const onError = (e: string) => Alert.alert('Thông báo', e);
-
-  const onSubmit = async (values: SignupForm) => {
+  const onStart = () => {
+    console.log('Set loading state');
     setLoading(true);
     setLabel('Đang đăng ký...');
-    setTimeout(async () => {
-      await AuthService.signup(onSuccess, onError, values);
-      setLabel('Tiến hành đăng ký');
-      setLoading(false);
-    }, 0);
   };
-
-  const initialValues: SignupForm = {fullName: ''};
+  const onSuccess = info => navigation.navigate('AuthSignupSuccess', info);
+  const onError = error => Alert.alert('Thông báo', error);
+  const onFinish = () => {
+    setLabel('Tiến hành đăng ký');
+    setLoading(false);
+  };
+  const onSubmit = async payload =>
+    AuthService.Signup({onStart, onSuccess, onError, onFinish, payload});
 
   return (
     <Formik
-      initialValues={initialValues}
+      initialValues={{fullName: ''}}
       validationSchema={SignupSchema}
       onSubmit={onSubmit}>
       {({handleChange, handleBlur, handleSubmit, values, errors, touched}) => (
@@ -50,7 +42,7 @@ export const AuthSignup = ({navigation}: Props) => {
             style={style.textInput}
           />
           {errors.fullName && touched.fullName ? (
-            <Text style={style.textErr}>{errors.fullName}</Text>
+            <Text>{errors.fullName}</Text>
           ) : null}
           <Button
             mode="contained"
@@ -76,7 +68,4 @@ const style = StyleSheet.create({
     marginVertical: 30,
   },
   textInput: {},
-  textErr: {
-    //marginVertical: 10,
-  },
 });
