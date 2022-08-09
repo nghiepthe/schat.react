@@ -7,11 +7,12 @@
     "ios": "react-native run-ios",
     "start:dev": "type .env.development > .env & npx react-native start",
     "start:prod": "type .env.production > .env & npx react-native start",
-    "li:dev": "cat .env.development > .env & npx react-native start",
-    "li:prod": "cat .env.production > .env & npx react-native start",
+    "li:dev": "NODE_ENV=development npx react-native start",
+    "li:prod": "NODE_ENV=production npx react-native start",
     "test": "jest",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
-    "postinstall": "patch-package"
+    "postinstall": "patch-package",
+    "watch-need-help": "echo 256 | sudo tee -a /proc/sys/fs/inotify/max_user_instances && echo 32768 | sudo tee -a /proc/sys/fs/inotify/max_queued_events && echo 65536 | sudo tee -a /proc/sys/fs/inotify/max_user_watches && watchman shutdown-server"
   },
   "dependencies": {
     "@ethersproject/shims": "^5.6.0",
