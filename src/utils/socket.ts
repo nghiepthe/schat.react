@@ -1,4 +1,3 @@
-import EncryptedStorage from 'react-native-encrypted-storage';
 import {createContext} from 'react';
 import {io, Socket} from 'socket.io-client';
 

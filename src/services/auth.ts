@@ -3,11 +3,8 @@ import {MnemonicService, Axios, wrapper, socket} from '@utils';
 import {onReconnect} from '@utils/socket';
 
 const signup = async ({fullName}) => {
-  console.log('Generating key....');
   const {address, privateKey, mnemonic} = MnemonicService.generate();
-  console.log('Sign up....');
   const {data} = await Axios.post('user/add', {fullName, address});
-  console.log('Response from server: ', data);
   if (data?.error) throw data?.error;
   return {fullName, address, mnemonic, privateKey};
 };

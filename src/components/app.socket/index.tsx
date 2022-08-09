@@ -3,6 +3,7 @@ import {useAppDispatch} from '@store/hooks';
 import {socket} from '@utils';
 import {SocketContext} from '@utils/socket';
 import React, {PropsWithChildren, useEffect} from 'react';
+import {Alert} from 'react-native';
 
 export const AppSocket: React.FC<PropsWithChildren> = ({children}) => {
   const dispatch = useAppDispatch();
