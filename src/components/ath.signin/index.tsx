@@ -25,8 +25,11 @@ export const AuthSignin: React.FC<Props> = ({navigation}) => {
     setLoading(true);
   };
 
-  const onError = error => Alert.alert('Thông báo', error);
-  const onFinish = () => setLoading(false);
+  const onError = error => {
+    setLoading(false);
+    Alert.alert('Thông báo', error);
+  };
+  const onFinish = () => {};
 
   const onRead = (e: BarCodeReadEvent) =>
     AuthService.Signin({

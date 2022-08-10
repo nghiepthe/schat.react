@@ -5,10 +5,7 @@
   "scripts": {
     "android": "react-native run-android",
     "ios": "react-native run-ios",
-    "start:dev": "type .env.development > .env & npx react-native start",
-    "start:prod": "type .env.production > .env & npx react-native start",
-    "li:dev": "NODE_ENV=development npx react-native start",
-    "li:prod": "NODE_ENV=production npx react-native start",
+    "start": "npx react-native start",
     "test": "jest",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "postinstall": "patch-package",

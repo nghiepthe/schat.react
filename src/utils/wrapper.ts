@@ -14,9 +14,13 @@ function invoke(fn?: (e?: any) => void, data?: any) {
 export function wrapper(fn) {
   return ({onStart, onFinish, onSuccess, onError, payload}: IService = {}) => {
     invoke(onStart);
-    fn(payload)
-      .then(success => invoke(onSuccess, success))
-      .catch(error => invoke(onError, error))
-      .finally(() => invoke(onFinish));
+    setTimeout(
+      () =>
+        fn(payload)
+          .then(success => invoke(onSuccess, success))
+          .catch(error => invoke(onError, error))
+          .finally(() => invoke(onFinish)),
+      0,
+    );
   };
 }

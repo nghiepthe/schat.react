@@ -18,12 +18,13 @@ export const AuthSignup = ({navigation}: Props) => {
     setLoading(true);
     setLabel('Đang đăng ký...');
   };
-  const onSuccess = info => navigation.navigate('AuthSignupSuccess', info);
-  const onError = error => Alert.alert('Thông báo', error);
-  const onFinish = () => {
+  const onSuccess = info => navigation.replace('AuthSignupSuccess', info);
+  const onError = error => {
     setLabel('Tiến hành đăng ký');
     setLoading(false);
+    Alert.alert('Thông báo', error);
   };
+  const onFinish = () => {};
   const onSubmit = async payload =>
     AuthService.Signup({onStart, onSuccess, onError, onFinish, payload});
 

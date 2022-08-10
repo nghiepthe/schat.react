@@ -17,20 +17,29 @@ const initialState: TasksState = {
   tasks: [],
 };
 
-for (let i = 0; i <= 20; i++) {
-  initialState.tasks.push({
-    id: i,
-    title: `Title ${i}`,
-    description: `Description ${i}`,
-    img: Images.AuthWelcome.LOGO_CHAT,
-    state: Math.floor(Math.random() * 4),
-  });
-}
+// for (let i = 0; i <= 20; i++) {
+//   initialState.tasks.push({
+//     id: i,
+//     title: `Title ${i}`,
+//     description: `Description ${i}`,
+//     img: Images.AuthWelcome.LOGO_CHAT,
+//     state: Math.floor(Math.random() * 4),
+//   });
+// }
 const tasksSlice = createSlice({
   name: 'tasks',
   initialState,
-  reducers: {},
+  reducers: {
+    addTask(state, action) {
+      state.tasks.push(action.payload);
+    },
+    fetchTasks(state, action) {
+      console.log(action.payload);
+
+      state.tasks.concat(action.payload);
+    },
+  },
 });
 
-export const {} = tasksSlice.actions;
+export const {addTask, fetchTasks} = tasksSlice.actions;
 export const tasksReducer = tasksSlice.reducer;
