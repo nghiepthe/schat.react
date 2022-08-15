@@ -5,6 +5,7 @@ import {
   AuthSignupSuccess,
   AuthWelcome,
   DetailedTask,
+  TaskCreate,
 } from '@components';
 import {RootStackParamList} from '@components/app.nav/types';
 import {NavigationContainer} from '@react-navigation/native';
@@ -25,7 +26,7 @@ export const AppNav = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={AppNavOptions}>
-        {auth.isSignout ? (
+        {!auth.isSignout ? (
           <Stack.Group>
             <Stack.Screen
               name="AuthWelcome"
@@ -47,6 +48,7 @@ export const AppNav = () => {
               options={MainTabOpts}
             />
             <Stack.Screen name="DetailedTask" component={DetailedTask} />
+            <Stack.Screen name="TaskCreate" component={TaskCreate} />
           </Stack.Group>
         )}
       </Stack.Navigator>

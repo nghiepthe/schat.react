@@ -27,6 +27,7 @@ export type RootStackParamList = {
   DetailedTask: {
     taskID: number;
   };
+  TaskCreate: undefined;
 };
 
 export type RootStackScreenProps<T extends keyof RootStackParamList> =

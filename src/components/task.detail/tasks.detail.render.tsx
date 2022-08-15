@@ -45,12 +45,14 @@ const DetailRender = ({index, people}) => {
           <AddPeople visible={visible} hideModal={hideModal} people={people} />
           <TextInput
             label="Tiêu đề"
-            value="Giao diện"
+            // value="Giao diện"
             // onChangeText={text => setText(text)}
           />
           <TextInput
             label="Nội dung công việc"
             // onChangeText={text => setText(text)}
+            numberOfLines={5}
+            multiline={true}
           />
           <View style={styles.contentBox}>
             <View style={styles.contentLeft}>
@@ -58,8 +60,8 @@ const DetailRender = ({index, people}) => {
             </View>
             <View style={styles.contentRight}>
               <SelectDropdown
-                buttonTextAfterSelection={() => 'SelectDropdown'}
-                rowTextForSelection={() => 'SelectDropdown'}
+                buttonTextAfterSelection={() => 'Đã giao'}
+                rowTextForSelection={() => 'Đã giao'}
                 data={countries}
                 onSelect={text => {
                   Alert.alert(text);

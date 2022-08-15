@@ -1,13 +1,16 @@
 import {createSlice} from '@reduxjs/toolkit';
+import {RootState} from '@store';
 
 interface AuthState {
   isLoading: boolean;
   isSignout: boolean;
+  id: string;
 }
 
 const initialState: AuthState = {
   isLoading: true,
   isSignout: false,
+  id: '005',
 };
 
 const authSlice = createSlice({
@@ -27,3 +30,4 @@ const authSlice = createSlice({
 
 export const {onSignin, onSignout} = authSlice.actions;
 export const authReducer = authSlice.reducer;
+export const selectUserId = (rootState: RootState) => rootState.auth.id;

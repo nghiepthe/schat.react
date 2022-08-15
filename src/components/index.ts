@@ -1,3 +1,4 @@
+export {AppSocket} from './app.socket';
 export {AppNav} from './app.nav';
 export {AppLoading} from './app.loading';
 export {AuthWelcome} from './auth.welcome';
@@ -10,4 +11,4 @@ export {MainChat} from './chat.main';
 export {MainMenu} from './menu.main';
 export {MainTasks} from './tasks.main';
 export {DetailedTask} from './task.detail';
-export {AppSocket} from './app.socket';
+export {TaskCreate} from './task.create';
