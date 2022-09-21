@@ -12,6 +12,8 @@
     "watch-need-help": "echo 256 | sudo tee -a /proc/sys/fs/inotify/max_user_instances && echo 32768 | sudo tee -a /proc/sys/fs/inotify/max_queued_events && echo 65536 | sudo tee -a /proc/sys/fs/inotify/max_user_watches && watchman shutdown-server"
   },
   "dependencies": {
+    "@aries-framework/core": "^0.2.4",
+    "@aries-framework/react-native": "^0.2.4",
     "@ethersproject/shims": "^5.6.0",
     "@react-native-community/cameraroll": "^4.1.2",
     "@react-native-community/clipboard": "^1.5.1",
@@ -27,6 +29,7 @@
     "ethers": "^5.6.9",
     "fbjs": "^3.0.4",
     "formik": "^2.2.9",
+    "indy-sdk-react-native": "^0.2.2",
     "patch-package": "^6.4.7",
     "postinstall-postinstall": "^2.1.0",
     "react": "18.0.0",

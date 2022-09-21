@@ -269,6 +269,8 @@ android {
 }
 
 dependencies {
+    implementation 'net.java.dev.jna:jna:5.2.0'
+    
     implementation fileTree(dir: "libs", include: ["*.jar"])
 
     //noinspection GradleDynamicVersion
