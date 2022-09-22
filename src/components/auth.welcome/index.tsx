@@ -6,10 +6,12 @@ import {ButtonGroup} from './button-group';
 import {Logo} from './logo';
 import {WelcomeText} from './welcome-text';
 import {WINDOW_HEIGHT, WINDOW_WIDTH} from '@styles/mixins';
+import { Agency } from './agency';
 
 export const AuthWelcome = () => {
   return (
     <Background>
+      <Agency />
       <StatusBar />
       <Logo />
       <SafeAreaView style={{flex: 1}}>
