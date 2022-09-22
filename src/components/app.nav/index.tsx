@@ -26,7 +26,7 @@ export const AppNav = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={AppNavOptions}>
-        {!auth.isSignout ? (
+        {auth.isSignout ? (
           <Stack.Group>
             <Stack.Screen
               name="AuthWelcome"
