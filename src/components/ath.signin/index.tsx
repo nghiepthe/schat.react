@@ -58,9 +58,7 @@ export const AuthSignin: React.FC<Props> = ({navigation}) => {
         }
       },
     );
-    agent.oob.receiveInvitationFromUrl(
-      'ws://192.168.1.6:3001?oob=eyJAdHlwZSI6Imh0dHBzOi8vZGlkY29tbS5vcmcvb3V0LW9mLWJhbmQvMS4xL2ludml0YXRpb24iLCJAaWQiOiI2NThkMzkwOC0wNWJkLTQ5YjAtOTNmOC0zZGU4YTNiZWNmMjMiLCJsYWJlbCI6ImRlbW8tYWdlbnQtaXNzdWVyLTExIiwiYWNjZXB0IjpbImRpZGNvbW0vYWlwMSIsImRpZGNvbW0vYWlwMjtlbnY9cmZjMTkiXSwiaGFuZHNoYWtlX3Byb3RvY29scyI6WyJodHRwczovL2RpZGNvbW0ub3JnL2RpZGV4Y2hhbmdlLzEuMCIsImh0dHBzOi8vZGlkY29tbS5vcmcvY29ubmVjdGlvbnMvMS4wIl0sInNlcnZpY2VzIjpbeyJpZCI6IiNpbmxpbmUtMCIsInNlcnZpY2VFbmRwb2ludCI6IndzOi8vMTkyLjE2OC4xLjY6MzAwMSIsInR5cGUiOiJkaWQtY29tbXVuaWNhdGlvbiIsInJlY2lwaWVudEtleXMiOlsiZGlkOmtleTp6Nk1rb2pINHNHaVdpeXU2VmVhWTlUZXFHWjZWRVQ0WTVLUVpIN2ptcWhINTR6bjIiXSwicm91dGluZ0tleXMiOltdfV19',
-    );
+    agent.oob.receiveInvitationFromUrl(e.data);
 
     // AuthService.Connect({onStart, onFinish, onError, payload: e.data});
     // AuthService.Signin({
