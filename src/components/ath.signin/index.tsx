@@ -2,19 +2,24 @@ import {RootStackScreenProps} from '@components/app.nav/types';
 import {useFocusEffect} from '@react-navigation/native';
 import {SigninSchema} from '@schemas';
 import {AuthService} from '@services';
-import {socket} from '@utils';
+import {AgentContext, socket} from '@utils';
 import {Colors} from '@styles';
 import {Formik} from 'formik';
-import React, {useState} from 'react';
+import React, {useContext, useState} from 'react';
 import {Alert, Keyboard, StyleSheet, View} from 'react-native';
 import {BarCodeReadEvent} from 'react-native-camera';
 import {Button, Modal, Text, TextInput} from 'react-native-paper';
 import QRCodeScanner from 'react-native-qrcode-scanner';
+import {
+  CredentialEventTypes,
+  CredentialState,
+  CredentialStateChangedEvent,
+} from '@aries-framework/core';
 
 type Props = RootStackScreenProps<'AuthSignin'>;
 export const AuthSignin: React.FC<Props> = ({navigation}) => {
   useFocusEffect(() => navigation.setOptions({title: 'Đăng nhập'}));
-
+  const agent = useContext(AgentContext);
   const [loading, setLoading] = useState(false);
   const [visible, setVisible] = React.useState(false);
   const showModal = () => setVisible(true);
@@ -32,7 +37,32 @@ export const AuthSignin: React.FC<Props> = ({navigation}) => {
   const onFinish = () => {};
 
   const onRead = (e: BarCodeReadEvent) => {
-    AuthService.Connect({onStart, onFinish, onError, payload: e.data});
+    console.log(e.data);
+    agent.events.on<CredentialStateChangedEvent>(
+      CredentialEventTypes.CredentialStateChanged,
+      async ({payload}) => {
+        console.log('vao day');
+
+        switch (payload.credentialRecord.state) {
+          case CredentialState.OfferReceived:
+            console.log('received a credential');
+            await agent.credentials.acceptOffer({
+              credentialRecordId: payload.credentialRecord.id,
+            });
+
+          case CredentialState.Done:
+            console.log(
+              `Credential for credential id ${payload.credentialRecord.id} is accepted`,
+            );
+            console.log(await agent.credentials.getAll());
+        }
+      },
+    );
+    agent.oob.receiveInvitationFromUrl(
+      'ws://192.168.1.6:3001?oob=eyJAdHlwZSI6Imh0dHBzOi8vZGlkY29tbS5vcmcvb3V0LW9mLWJhbmQvMS4xL2ludml0YXRpb24iLCJAaWQiOiI2NThkMzkwOC0wNWJkLTQ5YjAtOTNmOC0zZGU4YTNiZWNmMjMiLCJsYWJlbCI6ImRlbW8tYWdlbnQtaXNzdWVyLTExIiwiYWNjZXB0IjpbImRpZGNvbW0vYWlwMSIsImRpZGNvbW0vYWlwMjtlbnY9cmZjMTkiXSwiaGFuZHNoYWtlX3Byb3RvY29scyI6WyJodHRwczovL2RpZGNvbW0ub3JnL2RpZGV4Y2hhbmdlLzEuMCIsImh0dHBzOi8vZGlkY29tbS5vcmcvY29ubmVjdGlvbnMvMS4wIl0sInNlcnZpY2VzIjpbeyJpZCI6IiNpbmxpbmUtMCIsInNlcnZpY2VFbmRwb2ludCI6IndzOi8vMTkyLjE2OC4xLjY6MzAwMSIsInR5cGUiOiJkaWQtY29tbXVuaWNhdGlvbiIsInJlY2lwaWVudEtleXMiOlsiZGlkOmtleTp6Nk1rb2pINHNHaVdpeXU2VmVhWTlUZXFHWjZWRVQ0WTVLUVpIN2ptcWhINTR6bjIiXSwicm91dGluZ0tleXMiOltdfV19',
+    );
+
+    // AuthService.Connect({onStart, onFinish, onError, payload: e.data});
     // AuthService.Signin({
     //   onStart,
     //   onFinish,

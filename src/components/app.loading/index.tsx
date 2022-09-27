@@ -28,12 +28,12 @@ export const AppLoading = () => {
   //useEffect(() => AuthService.Restore({onError}), []);
   useEffect(() => {
     async function initAgent() {
-      if (!agent.isInitialized) await agent.initialize();
-      const response = await fetch(
-        'http://192.168.1.6:3000/aries/get-invitation',
-      );
-      const invitationUrl = await response.text();
-      await agent.oob.receiveInvitationFromUrl(invitationUrl);
+      if (!agent.isInitialized) await agent.initialize().catch(console.log);
+      // const response = await fetch(
+      //   'http://192.168.1.6:3000/aries/get-invitation',
+      // );
+      // const invitationUrl = await response.text();
+      // await agent.oob.receiveInvitationFromUrl(invitationUrl);
       onFinishingLoading();
     }
     setTimeout(() => initAgent(), 0);

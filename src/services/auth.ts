@@ -41,22 +41,19 @@ const restore = async () => {
 
 const connect = async (invitationUrl) => {
   console.log(invitationUrl)
-  agent.oob.receiveInvitationFromUrl(invitationUrl);
   agent.events.on<CredentialStateChangedEvent>(CredentialEventTypes.CredentialStateChanged, async ({ payload }) => {
     switch (payload.credentialRecord.state) {
       case CredentialState.OfferReceived:
         console.log('received a credential')
         await agent.credentials.acceptOffer({ credentialRecordId: payload.credentialRecord.id })
-        break;
+
       case CredentialState.Done:
         console.log(`Credential for credential id ${payload.credentialRecord.id} is accepted`)
         console.log(await agent.credentials.getAll());
-        break;
-      default:
-        console.log(payload.credentialRecord.state);
-
     }
   })
+
+  agent.oob.receiveInvitationFromUrl(invitationUrl);
 };
 
 export const Signup = wrapper(signup);
