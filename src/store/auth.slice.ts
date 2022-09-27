@@ -1,5 +1,5 @@
-import {createSlice} from '@reduxjs/toolkit';
-import {RootState} from '@store';
+import { createSlice } from '@reduxjs/toolkit';
+import { RootState } from '@store';
 
 interface AuthState {
   isLoading: boolean;
@@ -17,6 +17,11 @@ const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
+    onLoadingComplete(state) {
+      state.isLoading = false;
+      state.isSignout = true;
+    }
+    ,
     onSignin(state) {
       state.isLoading = false;
       state.isSignout = false;
@@ -28,6 +33,6 @@ const authSlice = createSlice({
   },
 });
 
-export const {onSignin, onSignout} = authSlice.actions;
+export const { onSignin, onSignout, onLoadingComplete } = authSlice.actions;
 export const authReducer = authSlice.reducer;
 export const selectUserId = (rootState: RootState) => rootState.auth.id;

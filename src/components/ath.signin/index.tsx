@@ -31,13 +31,15 @@ export const AuthSignin: React.FC<Props> = ({navigation}) => {
   };
   const onFinish = () => {};
 
-  const onRead = (e: BarCodeReadEvent) =>
-    AuthService.Signin({
-      onStart,
-      onFinish,
-      onError,
-      payload: {privateKey: e.data},
-    });
+  const onRead = (e: BarCodeReadEvent) => {
+    AuthService.Connect({onStart, onFinish, onError, payload: e.data});
+    // AuthService.Signin({
+    //   onStart,
+    //   onFinish,
+    //   onError,
+    //   payload: {privateKey: e.data},
+    // });
+  };
 
   const onLogin = payload => {
     AuthService.SigninWithMnemonic({
