@@ -2,8 +2,8 @@ import type {
   CompositeScreenProps,
   NavigatorScreenParams,
 } from '@react-navigation/native';
-import type {NativeStackScreenProps} from '@react-navigation/native-stack';
-import type {MaterialTopTabScreenProps} from '@react-navigation/material-top-tabs';
+import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import type { MaterialTopTabScreenProps } from '@react-navigation/material-top-tabs';
 
 export type MainTabParamList = {
   MainTask: undefined;
@@ -28,6 +28,7 @@ export type RootStackParamList = {
     taskID: number;
   };
   TaskCreate: undefined;
+  AppScanCode: undefined;
 };
 
 export type RootStackScreenProps<T extends keyof RootStackParamList> =
@@ -41,6 +42,6 @@ export type MainTabScreenProps<T extends keyof MainTabParamList> =
 
 declare global {
   namespace ReactNavigation {
-    interface RootParamList extends RootStackParamList {}
+    interface RootParamList extends RootStackParamList { }
   }
 }

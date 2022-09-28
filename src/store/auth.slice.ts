@@ -21,18 +21,18 @@ const authSlice = createSlice({
       state.isLoading = false;
       state.isSignout = true;
     }
-    ,
-    onSignin(state) {
-      state.isLoading = false;
-      state.isSignout = false;
-    },
-    onSignout(state) {
-      state.isLoading = false;
-      state.isSignout = true;
-    },
+    // ,
+    // onSignin(state) {
+    //   state.isLoading = false;
+    //   state.isSignout = false;
+    // },
+    // onSignout(state) {
+    //   state.isLoading = false;
+    //   state.isSignout = true;
+    // },
   },
 });
 
-export const { onSignin, onSignout, onLoadingComplete } = authSlice.actions;
+export const { onLoadingComplete } = authSlice.actions;
 export const authReducer = authSlice.reducer;
 export const selectUserId = (rootState: RootState) => rootState.auth.id;
