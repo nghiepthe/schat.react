@@ -1,4 +1,4 @@
 export { hasAndroidPermission } from './permission';
 export { saveQRCode } from './qrcode';
 export { wrapper } from './wrapper';
-export { AgentContext, agent } from './agent';
+export { AgentContext, agent, setupListener } from './agent';

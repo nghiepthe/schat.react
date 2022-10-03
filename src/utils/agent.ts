@@ -1,22 +1,22 @@
 import {
     Agent,
-    AutoAcceptCredential, AutoAcceptProof, HttpOutboundTransport,
-    InitConfig,
-    WsOutboundTransport
+    AutoAcceptCredential, AutoAcceptProof, ConnectionEventTypes, ConnectionStateChangedEvent, CredentialEventTypes, CredentialState, CredentialStateChangedEvent, DidExchangeState, HttpOutboundTransport,
+    InitConfig, ProofEventTypes,
+    ProofState, ProofStateChangedEvent, WsOutboundTransport
 } from '@aries-framework/core';
 import { agentDependencies } from '@aries-framework/react-native';
 import { createContext } from 'react';
 
 const initializeHolderAgent = () => {
     const config: InitConfig = {
-        label: 'schat-agent-05',
+        label: 'schat-agent-09',
         walletConfig: {
-            id: 'schat-wallet-05',
+            id: 'schat-wallet-09',
             key: 'testkey0000000000000000000000099',
         },
         indyLedgers: [
             {
-                id: 'schat-ledger-05',
+                id: 'schat-ledger-09',
                 isProduction: false,
                 genesisTransactions: `{"reqSignature":{},"txn":{"data":{"data":{"alias":"Node1","blskey":"4N8aUNHSgjQVgkpm8nhNEfDf6txHznoYREg9kirmJrkivgL4oSEimFF6nsQ6M41QvhM2Z33nves5vfSn9n1UwNFJBYtWVnHYMATn76vLuL3zU88KyeAYcHfsih3He6UHcXDxcaecHVz6jhCYz1P2UZn2bDVruL5wXpehgBfBaLKm3Ba","blskey_pop":"RahHYiCvoNCtPTrVtP7nMC5eTYrsUA8WjXbdhNc8debh1agE9bGiJxWBXYNFbnJXoXhWFMvyqhqhRoq737YQemH5ik9oL7R4NTTCz2LEZhkgLJzB3QRQqJyBNyv7acbdHrAT8nQ9UkLbaVL9NBpnWXBTw4LEMePaSHEw66RzPNdAX1","client_ip":"192.168.1.6","client_port":9702,"node_ip":"192.168.1.6","node_port":9701,"services":["VALIDATOR"]},"dest":"Gw6pDLhcBcoQesN72qfotTgFa7cbuqZpkX3Xo6pLhPhv"},"metadata":{"from":"Th7MpTaRZVRYnPiabds81Y"},"type":"0"},"txnMetadata":{"seqNo":1,"txnId":"fea82e10e894419fe2bea7d96296a6d46f50f93f9eeda954ec461b2ed2950b62"},"ver":"1"}
                 {"reqSignature":{},"txn":{"data":{"data":{"alias":"Node2","blskey":"37rAPpXVoxzKhz7d9gkUe52XuXryuLXoM6P6LbWDB7LSbG62Lsb33sfG7zqS8TK1MXwuCHj1FKNzVpsnafmqLG1vXN88rt38mNFs9TENzm4QHdBzsvCuoBnPH7rpYYDo9DZNJePaDvRvqJKByCabubJz3XXKbEeshzpz4Ma5QYpJqjk","blskey_pop":"Qr658mWZ2YC8JXGXwMDQTzuZCWF7NK9EwxphGmcBvCh6ybUuLxbG65nsX4JvD4SPNtkJ2w9ug1yLTj6fgmuDg41TgECXjLCij3RMsV8CwewBVgVN67wsA45DFWvqvLtu4rjNnE9JbdFTc1Z4WCPA3Xan44K1HoHAq9EVeaRYs8zoF5","client_ip":"192.168.1.6","client_port":9704,"node_ip":"192.168.1.6","node_port":9703,"services":["VALIDATOR"]},"dest":"8ECVSk179mjsjKRLWiQtssMLgp6EPhWXtaYyStWPSGAb"},"metadata":{"from":"EbP4aYNeTHL6q385GuVpRV"},"type":"0"},"txnMetadata":{"seqNo":2,"txnId":"1ac8aece2a18ced660fef8694b61aac3af08ba875ce3026a160acbc3a3af35fc"},"ver":"1"}
@@ -27,7 +27,7 @@ const initializeHolderAgent = () => {
         autoAcceptConnections: true,
         autoAcceptCredentials: AutoAcceptCredential.ContentApproved,
         autoAcceptProofs: AutoAcceptProof.ContentApproved,
-        mediatorConnectionsInvite: "ws://192.168.1.6:8000/?c_i=eyJAdHlwZSI6ICJkaWQ6c292OkJ6Q2JzTlloTXJqSGlxWkRUVUFTSGc7c3BlYy9jb25uZWN0aW9ucy8xLjAvaW52aXRhdGlvbiIsICJAaWQiOiAiMjM4OGY4N2UtNTlmNS00ODUxLThhYzctNmFjNzNmNGJlYjg5IiwgImxhYmVsIjogIk1lZGlhdGlvbiIsICJyZWNpcGllbnRLZXlzIjogWyJBbkVrWDl6cWN1OHZSdG40d0JyeWh4UHhqMU5rckFOZm5rSEtYVTU1dUNRRCJdLCAic2VydmljZUVuZHBvaW50IjogIndzOi8vMTkyLjE2OC4xLjY6ODAwMC8ifQ=="
+        mediatorConnectionsInvite: "ws://192.168.1.6:8000/?c_i=eyJAdHlwZSI6ICJkaWQ6c292OkJ6Q2JzTlloTXJqSGlxWkRUVUFTSGc7c3BlYy9jb25uZWN0aW9ucy8xLjAvaW52aXRhdGlvbiIsICJAaWQiOiAiMmVmMmNkYTQtMmQxYS00ZWY0LTlhZDItN2M1MWQwMmJkNTBmIiwgImxhYmVsIjogIk1lZGlhdGlvbiIsICJzZXJ2aWNlRW5kcG9pbnQiOiAid3M6Ly8xOTIuMTY4LjEuNjo4MDAwLyIsICJyZWNpcGllbnRLZXlzIjogWyJDQTNlYzRtclNNdGgxdjlxd3JFcUtTblVoTkozWjFwZUZ4cHdWY1NIZlRRUiJdfQ=="
     };
     const agent = new Agent(config, agentDependencies);
     agent.registerOutboundTransport(new HttpOutboundTransport());
@@ -37,3 +37,35 @@ const initializeHolderAgent = () => {
 
 export const agent = initializeHolderAgent();
 export const AgentContext = createContext(agent);
+
+export const setupListener = (agent: Agent) => {
+
+    agent.events.on<ConnectionStateChangedEvent>(ConnectionEventTypes.ConnectionStateChanged, async ({ payload }) => {
+        switch (payload.connectionRecord.state) {
+            case DidExchangeState.Abandoned:
+                console.log(`${payload.connectionRecord.id} was abandoned!`);
+        }
+        if (payload.connectionRecord.state === DidExchangeState.Completed) {
+        }
+    });
+
+    agent.events.on<CredentialStateChangedEvent>(CredentialEventTypes.CredentialStateChanged, async ({ payload }) => {
+        switch (payload.credentialRecord.state) {
+            case CredentialState.OfferReceived:
+                await agent.credentials.acceptOffer({ credentialRecordId: payload.credentialRecord.id });
+                break;
+            case CredentialState.CredentialReceived:
+            //agent.connections.deleteById(payload.credentialRecord.connectionId!);
+        }
+    });
+
+    agent.events.on<ProofStateChangedEvent>(
+        ProofEventTypes.ProofStateChanged,
+        async ({ payload }) => {
+            switch (payload.proofRecord.state) {
+                case ProofState.PresentationSent:
+                    break;
+            }
+        },
+    );
+};

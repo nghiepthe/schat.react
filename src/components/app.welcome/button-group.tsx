@@ -12,6 +12,7 @@ import {
   ProofStateChangedEvent,
   ProofEventTypes,
   ProofState,
+  ConnectionRecord,
 } from '@aries-framework/core';
 
 export const ButtonGroup = () => {
@@ -19,7 +20,7 @@ export const ButtonGroup = () => {
     useNavigation<RootStackScreenProps<'AuthWelcome'>['navigation']>();
   return (
     <View style={style.containerbutton}>
-      {/* Đăng nhập */}
+      {/* Scan Code */}
       <Text style={style.textthird}>{AuthWelcome.INSTRUCTION}</Text>
       <TouchableOpacity
         style={style.buttonlogin}
@@ -34,7 +35,7 @@ export const ButtonGroup = () => {
         </Text>
       </TouchableOpacity>
 
-      {/* Đăng ký */}
+      {/* Đăng nhập */}
       <TouchableOpacity
         style={style.buttonlogout}
         onPress={async () => {
