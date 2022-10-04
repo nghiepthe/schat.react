@@ -1,10 +1,10 @@
 import React from 'react';
-import {AuthWelcome} from '@constants';
-import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import {WINDOW_WIDTH, WINDOW_HEIGHT} from '@styles/mixins';
-import {RootStackScreenProps} from '@components/app.nav/types';
-import {useNavigation} from '@react-navigation/native';
-import {agent} from '@utils';
+import { AuthWelcome } from '@constants';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { WINDOW_WIDTH, WINDOW_HEIGHT } from '@styles/mixins';
+import { RootStackScreenProps } from '@components/app.nav/types';
+import { useNavigation } from '@react-navigation/native';
+import { agent } from '@utils';
 import {
   CredentialEventTypes,
   CredentialState,
@@ -40,12 +40,12 @@ export const ButtonGroup = () => {
         style={style.buttonlogout}
         onPress={async () => {
           const response = await fetch(
-            'http://192.168.1.6:3000/aries/login-invitation',
+            'http://192.168.43.71:3000/aries/login-invitation',
           );
           const invitationUrl = await response.text();
           agent.events.on<ProofStateChangedEvent>(
             ProofEventTypes.ProofStateChanged,
-            async ({payload}) => {
+            async ({ payload }) => {
               console.log(payload.proofRecord.state);
               switch (payload.proofRecord.state) {
                 case ProofState.RequestReceived:
