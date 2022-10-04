@@ -17,6 +17,7 @@ export const AppLoading = () => {
   useEffect(() => {
     async function initAgent() {
       if (!agent.isInitialized) await agent.initialize();
+
       setupListener(agent);
       onFinishingLoading();
     }

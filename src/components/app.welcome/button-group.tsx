@@ -16,6 +16,7 @@ import {
 } from '@aries-framework/core';
 
 export const ButtonGroup = () => {
+
   const navigation =
     useNavigation<RootStackScreenProps<'AuthWelcome'>['navigation']>();
   return (
@@ -40,39 +41,12 @@ export const ButtonGroup = () => {
         style={style.buttonlogout}
         onPress={async () => {
           const response = await fetch(
-            'http://192.168.43.71:3000/aries/login-invitation',
+            'http://192.168.1.6:3000/agent/get-login-url',
           );
           const invitationUrl = await response.text();
-          agent.events.on<ProofStateChangedEvent>(
-            ProofEventTypes.ProofStateChanged,
-            async ({ payload }) => {
-              console.log(payload.proofRecord.state);
-              switch (payload.proofRecord.state) {
-                case ProofState.RequestReceived:
-                  console.log('received a proof request');
-                  const retrievedCredentials =
-                    await agent.proofs.getRequestedCredentialsForProofRequest(
-                      payload.proofRecord.id,
-                      {
-                        filterByPresentationPreview: true,
-                      },
-                    );
-                  const requestedCredentials =
-                    agent.proofs.autoSelectCredentialsForProofRequest(
-                      retrievedCredentials,
-                    );
-                  await agent.proofs.acceptRequest(
-                    payload.proofRecord.id,
-                    requestedCredentials,
-                  );
-                  break;
-                case ProofState.Done:
-                  console.log('Done presentation proof');
-                  break;
-              }
-            },
-          );
-          agent.oob.receiveInvitationFromUrl(invitationUrl);
+          console.log(invitationUrl);
+          agent.oob.receiveInvitationFromUrl(invitationUrl, { reuseConnection: true });
+
         }}>
         <Text
           style={{
@@ -81,6 +55,27 @@ export const ButtonGroup = () => {
             color: '#FFFFFF',
           }}>
           {'Đăng nhập'}
+        </Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={style.buttonlogout}
+        onPress={async () => {
+          //await agent.oob.receiveInvitationFromUrl("ws://192.168.1.6:4000?oob=eyJAdHlwZSI6Imh0dHBzOi8vZGlkY29tbS5vcmcvb3V0LW9mLWJhbmQvMS4xL2ludml0YXRpb24iLCJAaWQiOiJlZTEyZTA2MC0zNTNjLTRlYjMtYmNhZi1kNzRjOTg2NzQxMDkiLCJsYWJlbCI6InNjaGF0LWJlLWFnZW50LTEzIiwiYWNjZXB0IjpbImRpZGNvbW0vYWlwMSIsImRpZGNvbW0vYWlwMjtlbnY9cmZjMTkiXSwiaGFuZHNoYWtlX3Byb3RvY29scyI6WyJodHRwczovL2RpZGNvbW0ub3JnL2RpZGV4Y2hhbmdlLzEuMCIsImh0dHBzOi8vZGlkY29tbS5vcmcvY29ubmVjdGlvbnMvMS4wIl0sInNlcnZpY2VzIjpbeyJpZCI6IiNpbmxpbmUtMCIsInNlcnZpY2VFbmRwb2ludCI6IndzOi8vMTkyLjE2OC4xLjY6NDAwMCIsInR5cGUiOiJkaWQtY29tbXVuaWNhdGlvbiIsInJlY2lwaWVudEtleXMiOlsiZGlkOmtleTp6Nk1rcTJNUkM3dDVOS1plQlhMUlEyZVk2aFp4eXdQTUVKdEhpTkdKR0dzNU1RMmciXSwicm91dGluZ0tleXMiOltdfV19", { reuseConnection: true });
+          const oob = await agent.oob.getAll();
+          const con = await agent.connections.getAll();
+          //  con.forEach(o => console.log(o.isReady));
+          // oob.forEach(o => agent.oob.deleteById(o.id));
+          // con.forEach(o => agent.connections.deleteById(o.id));
+          console.log("GG", JSON.stringify(oob), JSON.stringify(con));
+          con.forEach(c => !c.isReady && agent.basicMessages.sendMessage(c.id, "hello"))
+        }}>
+        <Text
+          style={{
+            fontFamily: 'Roboto',
+            fontSize: 14,
+            color: '#FFFFFF',
+          }}>
+          {'Test'}
         </Text>
       </TouchableOpacity>
     </View>
