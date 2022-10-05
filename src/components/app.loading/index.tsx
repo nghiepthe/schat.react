@@ -2,7 +2,7 @@ import { ARCIFORM } from '@assets/fonts';
 import { onLoadingComplete } from '@store/auth.slice';
 import { useAppDispatch } from '@store/hooks';
 import { BLACK, SHAPE, WHITE } from '@styles/colors';
-import { AgentContext, setupListener } from '@utils';
+import { AgentContext, setupListener, initializeAgent } from '@utils';
 import React, { useContext, useEffect } from 'react';
 import { StyleSheet } from 'react-native';
 import { Flex } from 'react-native-flex-layout';
@@ -17,9 +17,8 @@ export const AppLoading = () => {
   useEffect(() => {
     async function initAgent() {
       if (!agent.isInitialized) await agent.initialize();
-
-      setupListener(agent);
-      onFinishingLoading();
+      setupListener(agent, onFinishingLoading);
+      initializeAgent(agent, onFinishingLoading);
     }
     setTimeout(() => initAgent(), 0);
   }, []);

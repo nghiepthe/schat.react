@@ -5,12 +5,14 @@ interface AuthState {
   isLoading: boolean;
   isSignout: boolean;
   id: string;
+  connectionId: string;
 }
 
 const initialState: AuthState = {
   isLoading: true,
   isSignout: false,
-  id: '005',
+  connectionId: "",
+  id: "",
 };
 
 const authSlice = createSlice({
@@ -20,19 +22,14 @@ const authSlice = createSlice({
     onLoadingComplete(state) {
       state.isLoading = false;
       state.isSignout = true;
+    },
+    onUpdateConnectionId(state, action) {
+      state.connectionId = action.payload;
     }
-    // ,
-    // onSignin(state) {
-    //   state.isLoading = false;
-    //   state.isSignout = false;
-    // },
-    // onSignout(state) {
-    //   state.isLoading = false;
-    //   state.isSignout = true;
-    // },
   },
 });
 
-export const { onLoadingComplete } = authSlice.actions;
+export const { onLoadingComplete, onUpdateConnectionId } = authSlice.actions;
 export const authReducer = authSlice.reducer;
 export const selectUserId = (rootState: RootState) => rootState.auth.id;
+export const selectConnectionId = (rootState: RootState) => rootState.auth.connectionId;

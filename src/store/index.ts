@@ -1,4 +1,3 @@
-import { tasksReducer } from './task.slice';
 import { configureStore } from '@reduxjs/toolkit';
 import { authReducer } from './auth.slice';
 

@@ -13,10 +13,15 @@ import {
   ProofEventTypes,
   ProofState,
   ConnectionRecord,
+  PresentationPreview,
+  PresentationPreviewAttribute,
 } from '@aries-framework/core';
+import { useSelector } from 'react-redux';
+import { useAppSelector } from '@store/hooks';
+import { selectConnectionId } from '@store/auth.slice';
 
 export const ButtonGroup = () => {
-
+  const connectionId = useAppSelector(selectConnectionId);
   const navigation =
     useNavigation<RootStackScreenProps<'AuthWelcome'>['navigation']>();
   return (
@@ -40,13 +45,22 @@ export const ButtonGroup = () => {
       <TouchableOpacity
         style={style.buttonlogout}
         onPress={async () => {
-          const response = await fetch(
-            'http://192.168.1.6:3000/agent/get-login-url',
-          );
-          const invitationUrl = await response.text();
-          console.log(invitationUrl);
-          agent.oob.receiveInvitationFromUrl(invitationUrl, { reuseConnection: true });
-
+          await agent.proofs.proposeProof(connectionId, new PresentationPreview({
+            attributes: [
+              new PresentationPreviewAttribute({
+                name: 'id',
+                credentialDefinitionId: "PLEVLDPJQMJvPLyX3LgB6S:3:CL:11:default"
+              }),
+              new PresentationPreviewAttribute({
+                name: 'name',
+                credentialDefinitionId: "PLEVLDPJQMJvPLyX3LgB6S:3:CL:11:default"
+              }),
+              new PresentationPreviewAttribute({
+                name: 'role',
+                credentialDefinitionId: "PLEVLDPJQMJvPLyX3LgB6S:3:CL:11:default"
+              })
+            ]
+          }));
         }}>
         <Text
           style={{
@@ -60,15 +74,11 @@ export const ButtonGroup = () => {
       <TouchableOpacity
         style={style.buttonlogout}
         onPress={async () => {
-          //await agent.oob.receiveInvitationFromUrl("ws://192.168.1.6:4000?oob=eyJAdHlwZSI6Imh0dHBzOi8vZGlkY29tbS5vcmcvb3V0LW9mLWJhbmQvMS4xL2ludml0YXRpb24iLCJAaWQiOiJlZTEyZTA2MC0zNTNjLTRlYjMtYmNhZi1kNzRjOTg2NzQxMDkiLCJsYWJlbCI6InNjaGF0LWJlLWFnZW50LTEzIiwiYWNjZXB0IjpbImRpZGNvbW0vYWlwMSIsImRpZGNvbW0vYWlwMjtlbnY9cmZjMTkiXSwiaGFuZHNoYWtlX3Byb3RvY29scyI6WyJodHRwczovL2RpZGNvbW0ub3JnL2RpZGV4Y2hhbmdlLzEuMCIsImh0dHBzOi8vZGlkY29tbS5vcmcvY29ubmVjdGlvbnMvMS4wIl0sInNlcnZpY2VzIjpbeyJpZCI6IiNpbmxpbmUtMCIsInNlcnZpY2VFbmRwb2ludCI6IndzOi8vMTkyLjE2OC4xLjY6NDAwMCIsInR5cGUiOiJkaWQtY29tbXVuaWNhdGlvbiIsInJlY2lwaWVudEtleXMiOlsiZGlkOmtleTp6Nk1rcTJNUkM3dDVOS1plQlhMUlEyZVk2aFp4eXdQTUVKdEhpTkdKR0dzNU1RMmciXSwicm91dGluZ0tleXMiOltdfV19", { reuseConnection: true });
           const oob = await agent.oob.getAll();
           const con = await agent.connections.getAll();
-          //  con.forEach(o => console.log(o.isReady));
-          // oob.forEach(o => agent.oob.deleteById(o.id));
-          // con.forEach(o => agent.connections.deleteById(o.id));
-          console.log("GG", JSON.stringify(oob), JSON.stringify(con));
-          oob[0].outOfBandInvitation.
-            con.forEach(c => !c.isReady && agent.basicMessages.sendMessage(c.id, "hello"))
+          console.log(`oob: ${oob.length} - con: ${con.length}`);
+          con.forEach(c => console.log(c.isReady ? "\u2705 " : "❌ ", c.id, c.theirLabel))
+          con.map(c => c.isReady && agent.basicMessages.sendMessage(c.id, "hello"))
         }}>
         <Text
           style={{
@@ -77,6 +87,25 @@ export const ButtonGroup = () => {
             color: '#FFFFFF',
           }}>
           {'Test'}
+        </Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={style.buttonlogout}
+        onPress={async () => {
+          const oob = await agent.oob.getAll();
+          const con = await agent.connections.getAll();
+          await Promise.all(oob.map(async o => await agent.oob.deleteById(o.id)));
+          await Promise.all(con.map(async c => await agent.connections.deleteById(c.id)));
+          console.log("Done clearing!");
+
+        }}>
+        <Text
+          style={{
+            fontFamily: 'Roboto',
+            fontSize: 14,
+            color: '#FFFFFF',
+          }}>
+          {'Clear'}
         </Text>
       </TouchableOpacity>
     </View>

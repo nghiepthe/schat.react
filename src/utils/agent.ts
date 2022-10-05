@@ -1,11 +1,14 @@
 import {
     Agent,
-    AutoAcceptCredential, AutoAcceptProof, ConnectionEventTypes, ConnectionStateChangedEvent, CredentialEventTypes, CredentialState, CredentialStateChangedEvent, DidExchangeState, HttpOutboundTransport,
+    AutoAcceptCredential, AutoAcceptProof, ConnectionEventTypes, ConnectionRepository, ConnectionStateChangedEvent, CredentialEventTypes, CredentialState, CredentialStateChangedEvent, DidExchangeState, HttpOutboundTransport,
     InitConfig, ProofEventTypes,
     ProofState, ProofStateChangedEvent, WsOutboundTransport
 } from '@aries-framework/core';
 import { agentDependencies } from '@aries-framework/react-native';
 import { createContext } from 'react';
+import EncryptionStorage from 'react-native-encrypted-storage';
+import { store, } from "@store";
+import { onUpdateConnectionId } from "@store/auth.slice";
 
 const initializeHolderAgent = () => {
     const config: InitConfig = {
@@ -38,7 +41,37 @@ const initializeHolderAgent = () => {
 export const agent = initializeHolderAgent();
 export const AgentContext = createContext(agent);
 
-export const setupListener = (agent: Agent) => {
+export const initializeAgent = async (agent: Agent, fn) => {
+    // 2. get connectionId in device storage
+    let neededEstablishConnection = true;
+    const connectionId = await EncryptionStorage.getItem("connectionId");
+    if (connectionId) {
+        // 2.1 check if connectionId is ready and connected to server agent
+        try {
+            const con = await agent.connections.getById(connectionId);
+            if (!con.isReady) throw new Error("Connection is not ready!");
+            // 2.2 set state redux
+            store.dispatch(onUpdateConnectionId(connectionId));
+            neededEstablishConnection = false;
+        } catch (error) {
+            await EncryptionStorage.removeItem("connectionId");
+        }
+    }
+    // 3. get new invitation and establish connection
+    if (!neededEstablishConnection) return fn();
+
+    const response = await fetch(
+        'http://192.168.1.6:3000/agent/get-connection-invitation',
+    );
+    const invitationUrl = await response.text();
+    console.log(invitationUrl);
+    const conRes = agent.injectionContainer.resolve(ConnectionRepository);
+    const { outOfBandRecord, connectionRecord } = await agent.oob.receiveInvitationFromUrl(invitationUrl);
+    connectionRecord?.setTag("needUpdatingReduxAndDeviceStorage", true)
+    connectionRecord && await conRes.update(connectionRecord);
+};
+
+export const setupListener = (agent: Agent, fn) => {
 
     agent.events.on<ConnectionStateChangedEvent>(ConnectionEventTypes.ConnectionStateChanged, async ({ payload }) => {
         switch (payload.connectionRecord.state) {
@@ -46,6 +79,15 @@ export const setupListener = (agent: Agent) => {
                 console.log(`${payload.connectionRecord.id} was abandoned!`);
         }
         if (payload.connectionRecord.state === DidExchangeState.Completed) {
+            const needUpdatingReduxAndDeviceStorage = payload.connectionRecord.getTag("needUpdatingReduxAndDeviceStorage");
+            console.log(JSON.stringify(payload.connectionRecord));
+            console.log("Completed", needUpdatingReduxAndDeviceStorage);
+
+            if (needUpdatingReduxAndDeviceStorage) {
+                store.dispatch(onUpdateConnectionId(payload.connectionRecord.id));
+                await EncryptionStorage.setItem("connectionId", payload.connectionRecord.id);
+                fn();
+            }
         }
     });
 
@@ -90,3 +132,4 @@ export const setupListener = (agent: Agent) => {
         },
     );
 };
+
